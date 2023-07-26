@@ -4,74 +4,72 @@
 
 using namespace std;
 
-ByteStream::ByteStream( uint64_t capacity ) : capacity_( capacity ) {}
-
-void Writer::push( string data )
+ByteStream::ByteStream( uint64_t capacity ) : capacity_( capacity )
 {
-  // Your code here.
-  (void)data;
+  container_.reserve( capacity );
+}
+
+void Writer::push( const string& data )
+{
+  const uint64_t current_capacity = available_capacity();
+  const uint64_t push_size = min( current_capacity, data.size() );
+  container_ += data.substr( 0, push_size );
+  push_count_ += push_size;
 }
 
 void Writer::close()
 {
-  // Your code here.
+  close_ = true;
 }
 
 void Writer::set_error()
 {
-  // Your code here.
+  error_ = true;
 }
 
 bool Writer::is_closed() const
 {
-  // Your code here.
-  return {};
+  return close_;
 }
 
 uint64_t Writer::available_capacity() const
 {
-  // Your code here.
-  return {};
+  return capacity_ - container_.size();
 }
 
 uint64_t Writer::bytes_pushed() const
 {
-  // Your code here.
-  return {};
+  return push_count_;
 }
 
 string_view Reader::peek() const
 {
-  // Your code here.
-  return {};
+  return container_;
 }
 
 bool Reader::is_finished() const
 {
-  // Your code here.
-  return {};
+  return close_ and container_.empty();
 }
 
 bool Reader::has_error() const
 {
-  // Your code here.
-  return {};
+  return error_;
 }
 
 void Reader::pop( uint64_t len )
 {
-  // Your code here.
-  (void)len;
+  const auto pop_size = min( len, container_.size() );
+  container_.erase( container_.begin(), container_.begin() + static_cast<int>( pop_size ) );
+  pop_count_ += pop_size;
 }
 
 uint64_t Reader::bytes_buffered() const
 {
-  // Your code here.
-  return {};
+  return container_.size();
 }
 
 uint64_t Reader::bytes_popped() const
 {
-  // Your code here.
-  return {};
+  return pop_count_;
 }
